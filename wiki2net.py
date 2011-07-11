@@ -29,6 +29,9 @@ from xml.etree import ElementTree as ET
 import re
 
 
+NAMESPACES = ('User', 'Wikipedia', 'File', 'MediaWiki', 'Template', 'Help', 'Category', 'Thread', 'Summary', 'Portal', 'Book', 'Special', 'Media', 'Talk', 'User talk', 'Wikipedia talk', 'File talk', 'MediaWiki talk', 'Template talk', 'Help talk', 'Category talk', 'Thread talk', 'Summary talk', 'Portal talk', 'Book talk', 'WP', 'Project', 'WT', 'Project Talk', 'Image', 'Image Talk', 'MOS', 'CAT', 'P', 'T', 'H', 'C', 'MP', 'wiktionary', 'wikt', 'wikinews', 'n', 'wikibooks', 'b', 'wikiquote', 'q', 'wikisource', 's', 'oldwikisource', 'species', 'wikispecies', 'wikiversity', 'v', 'wikimedia', 'foundation', 'wmf', 'commons', 'meta', 'metawikipedia', 'm', 'strategy', 'incubator', 'mw', 'quality', 'bugzilla', 'mediazilla', 'nost', 'testwiki', 'wmar', 'wmau', 'wmca', 'wmcz', 'wmde', 'wmfi', 'wmhk', 'wmhu', 'wmin', 'wmid', 'wmil', 'wmit', 'wmnl', 'wmno', 'wmpl', 'wmru', 'wmrs', 'wmse', 'wmch', 'wmtw', 'wmuk', 'en', 'de', 'fr', 'it', 'pl', 'es', 'ja', 'nl', 'ru', 'pt', 'sv', 'zh', 'ca', 'no', 'uk', 'fi', 'vi', 'cs', 'hu', 'tr', 'id', 'ko', 'ro', 'fa', 'da', 'ar', 'eo', 'sr', 'lt', 'sk', 'he', 'ms', 'vo', 'bg', 'sl', 'eu', 'war', 'hr', 'hi', 'et', 'az', 'gl', 'simple', 'nn', 'new', 'th', 'el', 'roa-rup', 'la', 'ht', 'tl', 'ka', 'kk', 'te', 'mk', 'sh', 'nap', 'ceb', 'pms', 'br', 'be-x-old', 'lv', 'jv', 'mr', 'ta', 'sq', 'lb', 'cy', 'is', 'bs', 'be', 'oc', 'yo', 'an', 'bpy', 'bn', 'io', 'sw', 'lmo', 'fy', 'gu', 'mg', 'ml', 'af', 'nds', 'ur', 'scn', 'pnb', 'qu', 'ku', 'zh-yue', 'ne', 'ast', 'su', 'hy', 'ga', 'bat-smg', 'cv', 'wa', 'am', 'kn', 'tt', 'diq', 'als', 'tg', 'vec', 'roa-tara', 'zh-min-nan', 'yi', 'bug', 'gd', 'os', 'uz', 'sah', 'pam', 'arz', 'mi', 'hsb', 'sco', 'li', 'nah', 'mn', 'my', 'co', 'gan', 'glk', 'ia', 'hif', 'bcl', 'fo', 'sa', 'si', 'fiu-vro', 'nds-nl', 'bar', 'mrj', 'vls', 'tk', 'ckb', 'gv', 'ilo', 'se', 'map-bms', 'dv', 'nrm', 'pag', 'rm', 'mzn', 'bo', 'udm', 'fur', 'wuu', 'ug', 'ps', 'mt', 'csb', 'lij', 'km', 'pi', 'bh', 'ang', 'koi', 'kv', 'lad', 'sc', 'nov', 'zh-classical', 'mhr', 'cbk-zam', 'ksh', 'kw', 'rue', 'frp', 'so', 'hak', 'nv', 'pa', 'szl', 'xal', 'ie', 'rw', 'stq', 'haw', 'pdc', 'ln', 'ext', 'krc', 'to', 'pcd', 'ky', 'crh', 'ace', 'myv', 'eml', 'gn', 'ba', 'ce', 'arc', 'kl', 'or', 'ay', 'pap', 'frr', 'bjn', 'pfl', 'jbo', 'wo', 'tpi', 'kab', 'ty', 'srn', 'gag', 'zea', 'dsb', 'lo', 'ab', 'ig', 'mdf', 'tet', 'av', 'kg', 'mwl', 'lbe', 'rmy', 'na', 'kaa', 'ltg', 'cu', 'kbd', 'as', 'sm', 'mo', 'bm', 'ik', 'bi', 'sd', 'ss', 'ks', 'iu', 'pih', 'pnt', 'cdo', 'chr', 'got', 'ee', 'ha', 'za', 'ti', 'bxr', 'om', 'zu', 've', 'ts', 'rn', 'sg', 'dz', 'tum', 'cr', 'ch', 'lg', 'fj', 'ny', 'st', 'xh', 'ff', 'tn', 'ki', 'sn', 'chy', 'ak', 'tw', 'ng', 'ii', 'cho', 'mh', 'aa', 'kj', 'ho', 'mus', 'kr', 'hz', 'nan')
+
+
 def safe_execute(cur, query):
     try:
         cur.execute(query)
@@ -78,6 +81,24 @@ def create_db(dbpath):
     conn.close()
 
 
+def check_namespace(title, ns):
+    l = len(ns) + 1
+    return title[:l] == (ns + ':')
+
+
+def main_namespace(title):
+    # if title does not contain a colon, it can only belong to the main namespace
+    if ':' not in title:
+        return True
+
+    # otherwise we have to check for every namespace to be sure
+    for n in NAMESPACES:
+        if check_namespace(title, ns):
+            return False
+
+    return True
+
+
 def wiki2net(source, dbpath):
     count = 0
     for event, elem in ET.iterparse(source, events=('start', 'end')):
@@ -92,7 +113,8 @@ def wiki2net(source, dbpath):
                     for m in matches:
                         target = m.split('|')[0]
                         target = target.split('#')[0]
-                        print target
+                        if main_namespace(target):
+                            print target
             elem.clear()
 
 
