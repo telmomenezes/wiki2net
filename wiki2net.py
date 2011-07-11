@@ -87,7 +87,8 @@ def wiki2net(source, dbpath):
                 print count, '==== TITLE: ', elem.text, ' ===='
                 count += 1
             elif tag.find('text') >= 0:
-                print re.findall('\[\[.[^\]]\]\]', elem.text)
+                if len(elem.text) > 0:
+                    print re.findall('\[\[(.[^\])]\]\]', elem.text)
             elem.clear()
 
 
