@@ -85,8 +85,8 @@ def wiki2net(source, dbpath):
             if tag.find('title') >= 0:
                 print count, 'title', elem.text
                 count += 1
-            elif tag.find('timestamp') >= 0:
-                print 'timestamp', elem.text
+            elif tag.find('text') >= 0:
+                print elem.text
             elem.clear()
 
 
