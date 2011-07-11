@@ -26,6 +26,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 import sys
 import sqlite3
 from xml.etree import ElementTree as ET
+import re
 
 
 def safe_execute(cur, query):
