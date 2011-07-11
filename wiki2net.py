@@ -86,8 +86,7 @@ def wiki2net(source, dbpath):
                 print count, '==== TITLE: ', elem.text, ' ===='
                 count += 1
             elif tag.find('text') >= 0:
-                print elem.text
-                print '\n\n\n\n'
+                print len(elem.text)
             elem.clear()
 
 
