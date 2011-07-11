@@ -92,7 +92,7 @@ def main_namespace(title):
         return True
 
     # otherwise we have to check for every namespace to be sure
-    for n in NAMESPACES:
+    for ns in NAMESPACES:
         if check_namespace(title, ns):
             return False
 
