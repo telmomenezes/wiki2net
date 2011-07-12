@@ -113,6 +113,13 @@ def write2db(page_title, links):
     print links
 
 
+def normalize_title(title):
+    norm_title = title[0].upper() + title[1:]
+    if '_' in norm_title:
+        norm_title = norm_title.replace('_', ' ')
+    return norm_title
+
+
 def wiki2net(source, dbpath):
     page_title = ''
     revision_links = []
@@ -143,7 +150,7 @@ def wiki2net(source, dbpath):
                     write2db(page_title, page_links)
                     state = STATE_OUT
                 elif tag.find('title') >= 0:
-                    page_title = elem.text
+                    page_title = normalize_title(elem.text)
             elif state == STATE_INREVISION:
                 if tag.find('revision') >= 0:
                     process_links(revision_links, open_links, page_links, revision_ts)
