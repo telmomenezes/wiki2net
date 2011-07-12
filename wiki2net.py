@@ -129,7 +129,7 @@ def parse_link_markup(markup):
     target = target.split('#')[0]
     if len(target) > 0:
         if main_namespace(target):
-            return target
+            return normalize_title(target)
 
     return None
 
@@ -147,13 +147,15 @@ def wiki2net(source, dbpath):
         tag = elem.tag
 
         if event == 'start':
-            if tag.find('page') >= 0:
-                state = STATE_INPAGE
-                open_links = {}
-                page_links = []
-            elif tag.find('revision') >= 0:
-                state = STATE_INREVISION
-                revision_links = []
+            if state == STATE_OUT:
+                if tag.find('page') >= 0:
+                    state = STATE_INPAGE
+                    open_links = {}
+                    page_links = []
+            elif state == STATE_INPAGE:
+                if tag.find('revision') >= 0:
+                    state = STATE_INREVISION
+                    revision_links = []
         
         if event == 'end':
             if state == STATE_INPAGE:
@@ -164,7 +166,11 @@ def wiki2net(source, dbpath):
                     write2db(page_title, page_links)
                     state = STATE_OUT
                 elif tag.find('title') >= 0:
-                    page_title = normalize_title(elem.text)
+                    # only process articles from the main namespace
+                    if main_namespace(elem.text):
+                        page_title = normalize_title(elem.text)
+                    else:
+                        state = STATE_OUT
             elif state == STATE_INREVISION:
                 if tag.find('revision') >= 0:
                     process_links(revision_links, open_links, page_links, revision_ts)
@@ -181,7 +187,7 @@ def wiki2net(source, dbpath):
                             for m in matches:
                                 target = parse_link_markup(m)
                                 if target is not None:
-                                    revision_links.append(normalize_title(target))
+                                    revision_links.append(target)
             
             # clear current element to limit memory usage
             elem.clear()
