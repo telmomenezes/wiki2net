@@ -136,7 +136,6 @@ def wiki2net(source, dbpath):
                 state = STATE_INPAGE
                 open_links = {}
                 page_links = []
-                count += 1
             elif tag.find('revision') >= 0:
                 state = STATE_INREVISION
                 revision_links = []
@@ -145,6 +144,8 @@ def wiki2net(source, dbpath):
             if state == STATE_INPAGE:
                 if tag.find('page') >= 0:
                     process_links_final(open_links, page_links)
+                    count += 1
+                    print 'Article #%d' % count
                     write2db(page_title, page_links)
                     state = STATE_OUT
                 elif tag.find('title') >= 0:
