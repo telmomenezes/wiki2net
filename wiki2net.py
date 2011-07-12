@@ -88,9 +88,9 @@ def main_namespace(title):
         return True
 
     # otherwise we have to check for every namespace to be sure
-    for ns in NAMESPACES:
-        if check_namespace(title, ns):
-            return False
+    if title.split(':')[0] in NAMESPACES:
+        print 'NS', title
+        return False
 
     return True
 
