@@ -188,7 +188,7 @@ def wiki2net(source, dbpath):
 
                         if elem.text[:9] == '#REDIRECT':
                             if len(matches) > 0:
-                                target = parse_link_markup(matches[1])
+                                target = parse_link_markup(matches[0])
                                 if target is not None:
                                     print '#REDIRECT ->', target
                         else:
