@@ -57,15 +57,15 @@ def create_db(dbpath):
     safe_execute(cur, "CREATE TABLE link (id INTEGER PRIMARY KEY)")
     safe_execute(cur, "ALTER TABLE link ADD COLUMN orig_id INTEGER")
     safe_execute(cur, "ALTER TABLE link ADD COLUMN targ_id INTEGER")
-    safe_execute(cur, "ALTER TABLE link ADD COLUMN ts_start INTEGER")
-    safe_execute(cur, "ALTER TABLE link ADD COLUMN ts_end INTEGER")
+    safe_execute(cur, "ALTER TABLE link ADD COLUMN start_ts INTEGER")
+    safe_execute(cur, "ALTER TABLE link ADD COLUMN end_ts INTEGER")
 
     # create redirect table
     safe_execute(cur, "CREATE TABLE redirect (id INTEGER PRIMARY KEY)")
     safe_execute(cur, "ALTER TABLE redirect ADD COLUMN orig_id INTEGER")
     safe_execute(cur, "ALTER TABLE redirect ADD COLUMN targ_id INTEGER")
-    safe_execute(cur, "ALTER TABLE redirect ADD COLUMN ts_start INTEGER")
-    safe_execute(cur, "ALTER TABLE redirect ADD COLUMN ts_end INTEGER")
+    safe_execute(cur, "ALTER TABLE redirect ADD COLUMN start_ts INTEGER")
+    safe_execute(cur, "ALTER TABLE redirect ADD COLUMN end_ts INTEGER")
     
     # indexes
     safe_execute(cur, "CREATE INDEX article_id ON article (id)")
@@ -108,10 +108,28 @@ def process_links_final(open_links, page_links):
         page_links.append((l, open_links[l], -1))
 
 
-def write2db(page_title, links, page_redirs):
-    print page_title
-    print links
-    print page_redirs
+def find_or_crate_article(cur, title):
+    cur.execute("SELECT id FROM article WHERE title=?", title)
+    row = cur.fetchone()
+    if row is None:
+        cur.execute("INSERT INTO article (title) VALUES (?)", title)
+        return cur.lastrowid
+    else:
+        return row[0]
+
+
+def write2db(cur, page_title, links, page_redirs):
+    orig_id = find_or_create_article(cur, page_title)
+
+    for l in links:
+        targ_id = find_or_create_article(cur, l[0])
+        cur.execute("INSERT INTO link (orig_id, targ_id, start_ts, end_ts) VALUES (?, ?, ?, ?)", (orig_id, targ_id, l[1], l[2]))
+
+    for r in page_redirs:
+        targ_id = find_or_create_article(cur, r[0])
+        cur.execute("INSERT INTO redirect (orig_id, targ_id, start_ts, end_ts) VALUES (?, ?, ?, ?)", (orig_id, targ_id, r[1], r[2]))
+
+    print 'title: %s; links: %d; redirects: %d' % (page_title, len(links), len(page_redirs))
 
 
 def normalize_title(title):
@@ -136,6 +154,11 @@ def parse_link_markup(markup):
 
 
 def wiki2net(source, dbpath):
+    create_db(dbpath)
+    
+    conn = sqlite3.connect(dbpath)
+    cur = conn.cursor()
+    
     page_title = ''
     revision_links = []
     open_links = {}
@@ -154,6 +177,9 @@ def wiki2net(source, dbpath):
         if event == 'start':
             if state == STATE_OUT:
                 if tag.find('page') >= 0:
+                    count += 1
+                    print 'Parsing Article #%d' % count
+                    
                     state = STATE_INPAGE
                     open_links = {}
                     page_links = []
@@ -173,9 +199,9 @@ def wiki2net(source, dbpath):
                     process_links_final(open_links, page_links)
                     if cur_redir != '':
                         page_redirs.append((cur_redir, cur_redir_ts, -1))
-                    count += 1
-                    print 'Article #%d' % count
-                    write2db(page_title, page_links, page_redirs)
+                    
+                    write2db(cur, page_title, page_links, page_redirs)
+                    conn.commit()
                     state = STATE_OUT
 
                 elif tag.find('title') >= 0:
@@ -219,6 +245,11 @@ def wiki2net(source, dbpath):
             
             # clear current element to limit memory usage
             elem.clear()
+
+    # final commit and close db cursor and connection
+    conn.commit()
+    cur.close()
+    conn.close()
 
 
 if __name__ == '__main__':
