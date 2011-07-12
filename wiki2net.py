@@ -108,9 +108,10 @@ def process_links_final(open_links, page_links):
         page_links.append((l, open_links[l], -1))
 
 
-def write2db(page_title, links):
+def write2db(page_title, links, revision_links):
     print page_title
     print links
+    print revision_links
 
 
 def normalize_title(title):
@@ -139,6 +140,10 @@ def wiki2net(source, dbpath):
     revision_links = []
     open_links = {}
     page_links = []
+    page_redirs = []
+    cur_redir = ''
+    cur_redir_ts = -1
+    new_redir = ''
     revision_ts = ''
     state = STATE_OUT
 
@@ -152,19 +157,25 @@ def wiki2net(source, dbpath):
                     state = STATE_INPAGE
                     open_links = {}
                     page_links = []
+                    page_redirs = []
+                    cur_redir = ''
+                    cur_redir_ts = -1
 
             elif state == STATE_INPAGE:
                 if tag.find('revision') >= 0:
                     state = STATE_INREVISION
                     revision_links = []
+                    new_redir = ''
         
         if event == 'end':
             if state == STATE_INPAGE:
                 if tag.find('page') >= 0:
                     process_links_final(open_links, page_links)
+                    if cur_redir != '':
+                        revision_links.append((cur_redir, cur_redir_ts, -1))
                     count += 1
                     print 'Article #%d' % count
-                    write2db(page_title, page_links)
+                    write2db(page_title, page_links, revision_links)
                     state = STATE_OUT
 
                 elif tag.find('title') >= 0:
@@ -177,6 +188,14 @@ def wiki2net(source, dbpath):
             elif state == STATE_INREVISION:
                 if tag.find('revision') >= 0:
                     process_links(revision_links, open_links, page_links, revision_ts)
+                    if cur_redir != new_redir:
+                        if cur_redir != '':
+                            revision_links.append((cur_redir, cur_redir_ts, revision_ts))
+                        cur_redir = new_redir
+                        if cur_redir != '':
+                            cur_redir_ts = revision_ts
+                        else:
+                            cur_redir_ts = -1
                     state = STATE_INPAGE
 
                 elif tag.find('timestamp') >= 0:
@@ -190,8 +209,9 @@ def wiki2net(source, dbpath):
                             if len(matches) > 0:
                                 target = parse_link_markup(matches[0])
                                 if target is not None:
-                                    print '#REDIRECT ->', target
+                                    new_redir = target
                         else:
+                            new_redir = ''
                             for m in matches:
                                 target = parse_link_markup(m)
                                 if target is not None:
