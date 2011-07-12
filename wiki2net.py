@@ -108,7 +108,7 @@ def process_links_final(open_links, page_links):
         page_links.append((l, open_links[l], -1))
 
 
-def find_or_crate_article(cur, title):
+def find_or_create_article(cur, title):
     cur.execute("SELECT id FROM article WHERE title=?", title)
     row = cur.fetchone()
     if row is None:
