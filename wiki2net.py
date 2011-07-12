@@ -124,6 +124,16 @@ def normalize_title(title):
     return norm_title
 
 
+def parse_link_markup(markup):
+    target = markup.split('|')[0]
+    target = target.split('#')[0]
+    if len(target) > 0:
+        if main_namespace(target):
+            return target
+
+    return None
+
+
 def wiki2net(source, dbpath):
     page_title = ''
     revision_links = []
@@ -164,11 +174,13 @@ def wiki2net(source, dbpath):
                 elif tag.find('text') >= 0:
                     if elem.text is not None:
                         matches = re.findall('\[\[([^\]]*)\]\]', elem.text)
-                        for m in matches:
-                            target = m.split('|')[0]
-                            target = target.split('#')[0]
-                            if len(target) > 0:
-                                if main_namespace(target):
+
+                        if elem.text[:9] == '#REDIRECT':
+                            print '#REDIRECT'
+                        else:
+                            for m in matches:
+                                target = parse_link_markup(m)
+                                if target is not None:
                                     revision_links.append(normalize_title(target))
             
             # clear current element to limit memory usage
