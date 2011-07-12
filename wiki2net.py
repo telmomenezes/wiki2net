@@ -115,7 +115,7 @@ def write2db(page_title, links):
 
 def normalize_title(title):
     norm_title = title[0].upper()
-    if len(norm_title) > 1:
+    if len(title) > 1:
         norm_title += title[1:]
 
     if '_' in norm_title:
