@@ -92,6 +92,7 @@ def main_namespace(title):
         print 'NS', title
         return False
 
+    print 'MAIN', title
     return True
 
 
