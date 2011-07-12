@@ -76,12 +76,6 @@ def create_db(dbpath):
     conn.close()
 
 
-def check_namespace(title, ns):
-    print 'CN', title
-    l = len(ns) + 1
-    return title[:l] == (ns + ':')
-
-
 def main_namespace(title):
     # if title does not contain a colon, it can only belong to the main namespace
     if ':' not in title:
