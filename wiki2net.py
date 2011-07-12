@@ -201,7 +201,7 @@ def wiki2net(source, dbpath):
                     conn.commit()
                     
                     count += 1
-                    print 'Article #%d: %s; links: %d; redirects: %d' % (count, page_title, len(links), len(page_redirs))
+                    print 'Article #%d: %s; links: %d; redirects: %d' % (count, page_title, len(page_links), len(page_redirs))
                     
                     state = STATE_OUT
 
