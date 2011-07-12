@@ -77,6 +77,7 @@ def create_db(dbpath):
 
 
 def check_namespace(title, ns):
+    print 'CN', title
     l = len(ns) + 1
     return title[:l] == (ns + ':')
 
