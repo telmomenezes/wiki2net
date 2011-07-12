@@ -108,10 +108,10 @@ def process_links_final(open_links, page_links):
         page_links.append((l, open_links[l], -1))
 
 
-def write2db(page_title, links, revision_links):
+def write2db(page_title, links, page_redirs):
     print page_title
     print links
-    print revision_links
+    print page_redirs
 
 
 def normalize_title(title):
@@ -172,10 +172,10 @@ def wiki2net(source, dbpath):
                 if tag.find('page') >= 0:
                     process_links_final(open_links, page_links)
                     if cur_redir != '':
-                        revision_links.append((cur_redir, cur_redir_ts, -1))
+                        page_redirs.append((cur_redir, cur_redir_ts, -1))
                     count += 1
                     print 'Article #%d' % count
-                    write2db(page_title, page_links, revision_links)
+                    write2db(page_title, page_links, page_redirs)
                     state = STATE_OUT
 
                 elif tag.find('title') >= 0:
@@ -190,7 +190,7 @@ def wiki2net(source, dbpath):
                     process_links(revision_links, open_links, page_links, revision_ts)
                     if cur_redir != new_redir:
                         if cur_redir != '':
-                            revision_links.append((cur_redir, cur_redir_ts, revision_ts))
+                            page_redirs.append((cur_redir, cur_redir_ts, revision_ts))
                         cur_redir = new_redir
                         if cur_redir != '':
                             cur_redir_ts = revision_ts
