@@ -109,10 +109,10 @@ def process_links_final(open_links, page_links):
 
 
 def find_or_create_article(cur, title):
-    cur.execute("SELECT id FROM article WHERE title=?", title)
+    cur.execute("SELECT id FROM article WHERE title=?", (title,))
     row = cur.fetchone()
     if row is None:
-        cur.execute("INSERT INTO article (title) VALUES (?)", title)
+        cur.execute("INSERT INTO article (title) VALUES (?)", (title,))
         return cur.lastrowid
     else:
         return row[0]
