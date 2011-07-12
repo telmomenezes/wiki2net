@@ -89,10 +89,8 @@ def main_namespace(title):
 
     # otherwise we have to check for every namespace to be sure
     if title.split(':')[0] in NAMESPACES:
-        print 'NS', title
         return False
 
-    print 'MAIN', title
     return True
 
 
