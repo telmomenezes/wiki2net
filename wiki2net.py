@@ -129,9 +129,7 @@ def write2db(cur, page_title, links, page_redirs):
         targ_id = find_or_create_article(cur, r[0])
         cur.execute("INSERT INTO redirect (orig_id, targ_id, start_ts, end_ts) VALUES (?, ?, ?, ?)", (orig_id, targ_id, r[1], r[2]))
 
-    print 'title: %s; links: %d; redirects: %d' % (page_title, len(links), len(page_redirs))
-
-
+    
 def normalize_title(title):
     norm_title = title[0].upper()
     if len(title) > 1:
@@ -177,8 +175,7 @@ def wiki2net(source, dbpath):
         if event == 'start':
             if state == STATE_OUT:
                 if tag.find('page') >= 0:
-                    count += 1
-                    print 'Parsing Article #%d' % count
+                    
                     
                     state = STATE_INPAGE
                     open_links = {}
@@ -202,6 +199,10 @@ def wiki2net(source, dbpath):
                     
                     write2db(cur, page_title, page_links, page_redirs)
                     conn.commit()
+                    
+                    count += 1
+                    print 'Article #%d: %s; links: %d; redirects: %d' % (count, page_title, len(links), len(page_redirs))
+                    
                     state = STATE_OUT
 
                 elif tag.find('title') >= 0:
