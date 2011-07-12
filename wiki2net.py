@@ -167,8 +167,9 @@ def wiki2net(source, dbpath):
                         for m in matches:
                             target = m.split('|')[0]
                             target = target.split('#')[0]
-                            if main_namespace(target):
-                                revision_links.append(normalize_title(target))
+                            if len(target) > 0:
+                                if main_namespace(target):
+                                    revision_links.append(normalize_title(target))
             
             # clear current element to limit memory usage
             elem.clear()
