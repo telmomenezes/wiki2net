@@ -187,8 +187,8 @@ def wiki2net(source, dbpath):
                         matches = re.findall('\[\[([^\]]*)\]\]', elem.text)
 
                         if elem.text[:9] == '#REDIRECT':
-                            if len(m) > 0:
-                                target = parse_link_markup(m[1])
+                            if len(matches) > 0:
+                                target = parse_link_markup(matches[1])
                                 if target is not None:
                                     print '#REDIRECT ->', target
                         else:
