@@ -151,7 +151,7 @@ def parse_link_markup(markup):
     return None
 
 
-def wiki2net(source, dbpath):
+def wiki2net(dbpath):
     create_db(dbpath)
     
     conn = sqlite3.connect(dbpath)
@@ -169,7 +169,7 @@ def wiki2net(source, dbpath):
     state = STATE_OUT
 
     count = 0
-    for event, elem in ET.iterparse(source, events=('start', 'end')):
+    for event, elem in ET.iterparse(sys.stdin, events=('start', 'end')):
         tag = elem.tag
 
         if event == 'start':
@@ -254,4 +254,4 @@ def wiki2net(source, dbpath):
 
 
 if __name__ == '__main__':
-    wiki2net(sys.argv[1], sys.argv[2])
+    wiki2net(sys.argv[1])
