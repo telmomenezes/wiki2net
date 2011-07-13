@@ -119,6 +119,17 @@ def process_links_final(open_links, page_links):
             page_links.append((l, ts0, ts1))
 
 
+def processed_redirs(redirs):
+    # remove redirs that are too short lived
+    new_list = []
+    for i in range(len(redirs)):
+        if redirs[i][2] >= 0:
+            if (redirs[i][2] - redirs[i][1]) > STABILITY:
+                new_list.append(redirs[i])
+
+    return new_list
+ 
+
 def find_or_create_article(cur, title):
     cur.execute("SELECT id FROM article WHERE title=?", (title,))
     row = cur.fetchone()
@@ -210,7 +221,8 @@ def wiki2net(dbpath):
                     process_links_final(open_links, page_links)
                     if cur_redir != '':
                         page_redirs.append((cur_redir, cur_redir_ts, -1))
-                    
+                    page_redirs = processed_redirs(page_redirs)
+
                     write2db(cur, page_title, page_links, page_redirs)
                     conn.commit()
                     
