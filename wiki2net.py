@@ -143,6 +143,7 @@ def write2db(cur, page_title, links, page_redirs):
     
 def normalize_title(title):
     stitle = title.strip(' \t\n\r')
+    norm_title = ''
     if len(stitle) > 0:
         norm_title = stitle[0].upper()
     if len(stitle) > 1:
