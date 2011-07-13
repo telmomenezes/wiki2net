@@ -106,9 +106,9 @@ def process_links(revision_links, open_links, page_links, ts):
             open_links[l] = [ts, -1]
 
     for l in open_links:
-        if l[1] < 0:
-            if not l in revision_links:
-                l[1] = ts
+        if open_links[l][1] < 0:
+            if not open_links[l] in revision_links:
+                open_links[l][1] = ts
 
 
 def process_links_final(open_links, page_links):
