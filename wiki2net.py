@@ -123,8 +123,8 @@ def processed_redirs(redirs):
     # remove redirs that are too short lived
     new_list = []
     for r in redirs:
-        if (r[2] < 0) or ((r[2] - r[1]) > STABILITY)):
-                new_list.append(r)
+        if (r[2] < 0) or ((r[2] - r[1]) > STABILITY):
+            new_list.append(r)
 
     return new_list
  
