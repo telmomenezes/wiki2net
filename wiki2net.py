@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
 
 
+from settings import *
 import sys
 import sqlite3
 from xml.etree import ElementTree as ET
@@ -90,22 +91,32 @@ def main_namespace(title):
 
 def process_links(revision_links, open_links, page_links, ts):
     for l in revision_links:
-        if not l in open_links:
-            open_links[l] = ts
+        if l in open_links:
+            if open_links[l][1] >= 0:
+                ts0 = open_links[l][0]
+                ts1 = open_links[l][1]
+                if (ts - ts1) > STABILITY:
+                    if (ts1 - ts0) > STABILITY:
+                        page_links.append((l, ts0, ts1))
+                    open_links[l][0] = ts
+                    open_links[l][1] = -1
+                else:
+                    open_links[l][1] = ts
+        else:
+            open_links[l] = [ts, -1]
 
-    to_delete = []
     for l in open_links:
-        if not l in revision_links:
-            page_links.append((l, open_links[l], ts))
-            to_delete.append(l)
-
-    for l in to_delete:
-        del open_links[l]
+        if l[1] < 0:
+            if not l in revision_links:
+                l[1] = ts
 
 
 def process_links_final(open_links, page_links):
     for l in open_links:
-        page_links.append((l, open_links[l], -1))
+        ts0 = open_links[l][0]
+        ts1 = open_links[l][1]
+        if (ts1 < 0) or ((ts1 - ts0) > STABILITY):
+            page_links.append((l, ts0, ts1))
 
 
 def find_or_create_article(cur, title):
@@ -176,8 +187,6 @@ def wiki2net(dbpath):
         if event == 'start':
             if state == STATE_OUT:
                 if tag.find('page') >= 0:
-                    
-                    
                     state = STATE_INPAGE
                     open_links = {}
                     page_links = []
