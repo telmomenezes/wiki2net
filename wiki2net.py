@@ -122,9 +122,9 @@ def process_links_final(open_links, page_links):
 def processed_redirs(redirs):
     # remove redirs that are too short lived
     new_list = []
-    for i in range(len(redirs)):
-        if (redirs[i][2] < 0) or ((redirs[i][2] >= 0) and ((redirs[i][2] - redirs[i][1]) > STABILITY)):
-                new_list.append(redirs[i])
+    for r in redirs:
+        if (r[2] < 0) or ((r[2] - r[1]) > STABILITY)):
+                new_list.append(r)
 
     return new_list
  
