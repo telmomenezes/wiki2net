@@ -143,7 +143,8 @@ def write2db(cur, page_title, links, page_redirs):
     
 def normalize_title(title):
     norm_title = title.strip(' \t\n\r')
-    norm_title = norm_title[0].upper()
+    if len(title) > 0:
+        norm_title = norm_title[0].upper()
     if len(title) > 1:
         norm_title += title[1:]
 
@@ -158,7 +159,9 @@ def parse_link_markup(markup):
     target = target.split('#')[0]
     if len(target) > 0:
         if main_namespace(target):
-            return normalize_title(target)
+            target = normalize_title(target)
+            if len(target) > 0:
+                return target
 
     return None
 
