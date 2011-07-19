@@ -53,6 +53,7 @@ def create_db(dbpath):
     # create article table
     safe_execute(cur, "CREATE TABLE article (id INTEGER PRIMARY KEY)")
     safe_execute(cur, "ALTER TABLE article ADD COLUMN title TEXT")
+    safe_execute(cur, "ALTER TABLE article ADD COLUMN parsed INTEGER DEFAULT 0")
     
     # create link table
     safe_execute(cur, "CREATE TABLE link (id INTEGER PRIMARY KEY)")
@@ -133,10 +134,12 @@ def find_or_create_article(cur, title):
     cur.execute("SELECT id FROM article WHERE title=?", (title,))
     row = cur.fetchone()
     if row is None:
-        cur.execute("INSERT INTO article (title) VALUES (?)", (title,))
+        cur.execute("INSERT INTO article (title, parsed) VALUES (?, 1)", (title,))
         return cur.lastrowid
     else:
-        return row[0]
+        article_id = row[0]
+        cur.execute("UPDATE article SET parsed=1 WHERE id=?", (article_id,))
+        return article_id
 
 
 def write2db(cur, page_title, links, page_redirs):
