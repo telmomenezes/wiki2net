@@ -24,6 +24,12 @@ The database schema that was defined to contain the network is the following:
     CREATE INDEX article_id ON article (id);
     CREATE INDEX article_title ON article (title);
 
+## Parallel processing
+
+Processing files takes a considerable amount of time. The author's core i7-2600 machine is taking aprox. one day per dump file. One obvious way to speed things up is to process several dump files at the same time. You can process each file to a separate database file and then merge all the outputs with the merge.py script:
+
+    ./merge.py target.db src1.db src2.db ...
+
 ## Technical details
 
 Wikipedia dump files are very large xml files that include the content of every revision for every article. Wiki2net has to parse this content to find out when citations and redirections are created or removed.
