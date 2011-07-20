@@ -260,7 +260,7 @@ def wiki2net(dbpath):
                     if elem.text is not None:
                         matches = re.findall('\[\[([^\]]*)\]\]', elem.text)
 
-                        if elem.text[:9] == '#REDIRECT':
+                        if elem.text[:9].lower() == '#redirect':
                             if len(matches) > 0:
                                 target = parse_link_markup(matches[0])
                                 if target is not None:
