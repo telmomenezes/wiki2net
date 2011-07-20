@@ -24,6 +24,10 @@ The database schema that was defined to contain the network is the following:
     CREATE INDEX article_id ON article (id);
     CREATE INDEX article_title ON article (title);
 
+## Technical details
+
+Wikipedia dump files are very large xml files that include the content of every revision for every article. Wiki2net has to parse this content to find out when citations and redirections are created or removed.
+
 ## Author
 
 Wiki2net is being developed by Telmo Menezes (telmo@telmomenezes.com). Feel free to contact the author with an issues regarding this software.
