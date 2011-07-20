@@ -12,6 +12,18 @@ The main script is wiki2net.py. It reads a Wikipedia dump file from the stdin an
 
     bzcat enwiki-20110405-pages-meta-history1.xml.bz2 | ./wiki2net.py wikipedia.db
 
+So the idea here is to take advantage of the bzcat UNIX command to avoid having to decompress the dump files to disk. The simplest way to extract the network is to sequentially process all the dump files to the same sqlite3 file.
+
+## Database schema
+
+The database schema that was defined to contain the network is the following:
+
+    CREATE TABLE article (id INTEGER PRIMARY KEY, title TEXT, parsed INTEGER DEFAULT 0);
+    CREATE TABLE link (id INTEGER PRIMARY KEY, orig_id INTEGER, targ_id INTEGER, start_ts INTEGER, end_ts INTEGER);
+    CREATE TABLE redirect (id INTEGER PRIMARY KEY, orig_id INTEGER, targ_id INTEGER, start_ts INTEGER, end_ts INTEGER);
+    CREATE INDEX article_id ON article (id);
+    CREATE INDEX article_title ON article (title);
+
 ## Author
 
 Wiki2net is being developed by Telmo Menezes (telmo@telmomenezes.com). Feel free to contact the author with an issues regarding this software.
