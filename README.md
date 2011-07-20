@@ -4,11 +4,13 @@ Wiki2net is a set of scripts used to extract a dynamic network from Wikipedia da
 
 The network is stored on a SQLite3 database file, so that it is easy to manipulate with other tools. The scripts are written in Python.
 
-Wikipedia database dumps can be obtained here: http://dumps.wikimedia.org
+Wikipedia database dumps can be obtained here: http://dumps.wikimedia.org.
 
 ## Simple usage
 
-TBD
+The main script is wiki2net.py. It reads a Wikipedia dump file from the stdin and writes the extracted network to the sqlite3 database file passed as the first parameter. If the file does not exit, it is created. A simple usage example would be:
+
+bzcat enwiki-20110405-pages-meta-history1.xml.bz2
 
 ## Author
 
