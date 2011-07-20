@@ -10,7 +10,7 @@ Wikipedia database dumps can be obtained here: http://dumps.wikimedia.org.
 
 The main script is wiki2net.py. It reads a Wikipedia dump file from the stdin and writes the extracted network to the sqlite3 database file passed as the first parameter. If the file does not exit, it is created. A simple usage example would be:
 
-bzcat enwiki-20110405-pages-meta-history1.xml.bz2
+    bzcat enwiki-20110405-pages-meta-history1.xml.bz2 | ./wiki2net.py wikipedia.db
 
 ## Author
 
