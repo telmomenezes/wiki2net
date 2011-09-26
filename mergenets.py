@@ -66,10 +66,5 @@ def merge(dest, source):
     conn_src.close()
 
 
-def mergenets(dest, sources):
-    for source in sources:
-        merge(dest, source)
-
-
 if __name__ == '__main__':
-    mergenets(sys.argv[1], sys.argv[2:])
+    merge(sys.argv[1], sys.argv[2])
