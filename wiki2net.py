@@ -54,6 +54,8 @@ def create_db(dbpath):
     # indexes
     safe_execute(cur, "CREATE INDEX article_id ON article (id)")
     safe_execute(cur, "CREATE INDEX article_title ON article (title)")
+    safe_execute(cur, "CREATE INDEX link_orig_ts ON link (orig_id, start_ts, end_ts)")
+    safe_execute(cur, "CREATE INDEX link_targ_ts ON link (targ_id, start_ts, end_ts)")
 
     conn.commit()
     cur.close()

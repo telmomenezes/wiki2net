@@ -21,6 +21,7 @@ def rmredirects(dbpath):
 
     cur.execute("SELECT count(id) FROM redirect")
     total = cur.fetchone()[0]
+    print '%d redirects found' % total
 
     cur.execute("SELECT orig_id, targ_id, start_ts, end_ts FROM redirect")
     for row in cur:
@@ -32,7 +33,7 @@ def rmredirects(dbpath):
         cur2.execute("UPDATE link SET targ_id=? WHERE targ_id=? AND start_ts>=? AND end_ts<=?", (targ_id, orig_id, start_ts, end_ts))
         count += 1
         if (count % 1000) == 0:
-            print '%f%%' % ((float(count) / float(total)) * 100.0) 
+            print '%f%% (%d/%d)' % (((float(count) / float(total)) * 100.0), count, total)
  
     # final commit and close db cursor and connection
     conn.commit()
