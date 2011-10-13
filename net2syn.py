@@ -28,9 +28,9 @@ def net2syn(dbpath, outpath):
     nodes = {}
     cur.execute("SELECT id, title FROM article")
     for row in cur:
-        label = '%s [%d]' % (row[1], row[0])
+        label = 'adding nodes %s [%d]' % (row[1], row[0])
         nodes[row[0]] = net.add_node(label=label)
-        if (count % 1000) == 0:
+        if (count % 100000) == 0:
             print '%f%% (%d/%d)' % ((float(count)/ float(ncount)), count, ncount)
         count += 1
 
@@ -38,8 +38,8 @@ def net2syn(dbpath, outpath):
     cur.execute("SELECT orig_id, targ_id, start_ts, end_ts FROM link")
     for row in cur:
         net.add_edge(nodes[row[0]], nodes[row[1]], row[2], row[3])
-        if (count % 1000) == 0:
-            print '%f%% (%d/%d)' % ((float(count)/ float(lcount)), count, lcount)
+        if (count % 100000) == 0:
+            print 'adding links %f%% (%d/%d)' % ((float(count)/ float(lcount)), count, lcount)
         count += 1
 
     cur.close()
