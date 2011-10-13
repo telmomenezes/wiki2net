@@ -28,10 +28,10 @@ def net2syn(dbpath, outpath):
     nodes = {}
     cur.execute("SELECT id, title FROM article")
     for row in cur:
-        label = 'adding nodes %s [%d]' % (row[1], row[0])
+        label = '%s [%d]' % (row[1], row[0])
         nodes[row[0]] = net.add_node(label=label)
         if (count % 100000) == 0:
-            print '%f%% (%d/%d)' % ((float(count)/ float(ncount)), count, ncount)
+            print 'adding nodes %f%% (%d/%d)' % ((float(count)/ float(ncount)), count, ncount)
         count += 1
 
     count = 0
