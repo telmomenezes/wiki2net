@@ -31,7 +31,7 @@ def net2syn(dbpath, outpath):
         label = '%s [%d]' % (row[1], row[0])
         nodes[row[0]] = net.add_node(label=label)
         if (count % 100000) == 0:
-            print 'adding nodes %f%% (%d/%d)' % ((float(count)/ float(ncount)), count, ncount)
+            print 'adding nodes %f%% (%d/%d)' % ((float(count)/ float(ncount)) * 100, count, ncount)
         count += 1
 
     count = 0
@@ -39,7 +39,7 @@ def net2syn(dbpath, outpath):
     for row in cur:
         net.add_edge(nodes[row[0]], nodes[row[1]], row[2], row[3])
         if (count % 100000) == 0:
-            print 'adding links %f%% (%d/%d)' % ((float(count)/ float(lcount)), count, lcount)
+            print 'adding links %f%% (%d/%d)' % ((float(count)/ float(lcount)) * 100, count, lcount)
         count += 1
 
     cur.close()
