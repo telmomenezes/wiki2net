@@ -26,7 +26,7 @@ def net2syn(dbpath, outpath):
 
     count = 0
     nodes = {}
-    cur.execute("SELECT id, title, FROM article")
+    cur.execute("SELECT id, title FROM article")
     for row in cur:
         label = '%s [%d]' % (row[1], row[0])
         nodes[row[0]] = net.add_node(label=label)
