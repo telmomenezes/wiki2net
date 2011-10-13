@@ -21,7 +21,7 @@ def net2syn(dbpath, outpath):
     print ncount, 'nodes total'
 
     cur.execute("SELECT count(id) FROM link")
-    ncount = cur.fetchone()[0]
+    lcount = cur.fetchone()[0]
     print lcount, 'links total'
 
     count = 0
