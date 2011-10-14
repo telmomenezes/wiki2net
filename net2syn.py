@@ -12,6 +12,7 @@ from syn.net import Net
 
 def net2syn(dbpath, outpath):
     net = Net(outpath)
+    net.set_perm_edges(False)
 
     conn = sqlite3.connect(dbpath)
     cur = conn.cursor()
