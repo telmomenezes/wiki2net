@@ -52,4 +52,4 @@ def net2mongo(dbpath, mongodb):
 
 
 if __name__ == '__main__':
-    net2syn(sys.argv[1], sys.argv[2])
+    net2mongo(sys.argv[1], sys.argv[2])
