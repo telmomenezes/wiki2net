@@ -15,7 +15,7 @@ def net2mongo(dbpath, mongodb):
     cur = conn.cursor()
 
     mconn = Connection()
-    mdb = connection[mongodb]
+    mdb = mconn[mongodb]
     mnodes = mdb.nodes
     medges = mdb.edges
   
